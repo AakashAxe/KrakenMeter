@@ -5,20 +5,24 @@ from datetime import datetime, timezone
 def process_file(file_path: str):
     if FlowRepository().get_processed_file(file_name=file_path) is not None:
         return f"File {file_path} has already been processed. Skipping."
+    try:
+        with open(file_path, 'r') as file:
+            current_mpan_core_obj = None
+            current_meter_obj = None
+            for line in file:
+                current_mpan_core_obj, current_meter_obj = read_line(line.strip(), current_mpan_core_obj, current_meter_obj)   
 
-    with open(file_path, 'r') as file:
-        current_mpan_core_obj = None
-        current_meter_obj = None
-        for line in file:
-            current_mpan_core_obj, current_meter_obj = read_line(line.strip(), current_mpan_core_obj, current_meter_obj)
-            print(current_mpan_core_obj, current_meter_obj)    
-
-    #File processed add it to ProcessedFiles table
-    FlowRepository().add_processed_file(file_name=file_path)
-    return "File processed successfully."
+        #File processed add it to ProcessedFiles table
+        FlowRepository().add_processed_file(file_name=file_path)
+        return "File processed successfully."
+    except Exception as e:
+        return f"An error occurred while processing the file {file_path}: {str(e)}"
 
 def read_line(line: str, current_mpan_core_obj: Optional[str], current_meter_obj: Optional[str]):
     data = line.split("|")
+    if not data or len(data) == 0:
+        raise Exception("Empty line encountered.")
+
     code = data[0]
     if code == Codes.MPAN_CORE.value:
         # Process MPAN core line
@@ -36,9 +40,13 @@ def read_line(line: str, current_mpan_core_obj: Optional[str], current_meter_obj
 
 
 def process_mpan_core(data: [str]):
+    if len(data) < 3 or not data[1] or not data[2]:
+        print("Error: Incomplete MPAN core data.")
+        raise Exception("Incomplete MPAN core data.")
+
     core = data[1]
     status = data[2]
-    print(f"MPAN Core: {core}, BCS Validation Status: {status}")
+    # Check if MPAN core already exists
     if FlowRepository().get_mpan(core) is None:
         MPANCoreObj, created = FlowRepository().get_or_create_mpan(mpan_core=core, bcs_validation_status=status)
         return MPANCoreObj, None
@@ -51,6 +59,10 @@ def process_meter_reading(data: [str], current_mpan_core: Optional[str]):
     if current_mpan_core is None:
         print("Error: No current MPAN core set for meter reading.")
         return
+    if len(data) < 3 or not data[1] or not data[2]:
+        print("Error: Incomplete Meter reading data.")
+        raise Exception("Incomplete Meter reading data.")
+    
     meter_id = data[1]
     print(f"Meter ID: {meter_id}")
     reading_type = data[2]
@@ -66,6 +78,10 @@ def process_register_reading(data: [str], current_meter_obj: Optional[str]):
     if current_meter_obj is None:
         print("Error: No current Meter set for register reading.")
         return
+    if len(data) < 8 or not data[1] or not data[2] or not data[3] or not data[7]:
+        print("Error: Incomplete Register reading data.")
+        raise Exception("Incomplete Register reading data.")
+
     register_id = data[1]
     reading_date_time = convert_to_datetime(data[2])
     register_reading = float(data[3])

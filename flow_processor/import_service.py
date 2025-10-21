@@ -2,11 +2,7 @@ import os
 import argparse
 from .file_process_service import process_file
 
-
 # IMPORTING FILE AND READING
-
-# TODO : Check if File already in db
-
 def check_path(directory_path):
     """Checks if the provided directory path exists."""
     if os.path.isdir(directory_path):
