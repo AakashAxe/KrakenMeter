@@ -34,9 +34,10 @@ class Meter(models.Model):                      # TODO : Composite Key=?
 class Reading(models.Model):
     meter = models.ForeignKey(Meter, on_delete=models.CASCADE, related_name='meter_readings')
     meter_register_id = models.CharField(max_length=SHORT_CHAR)
-    reading_date_time = models.DateTimeField()
-    register_reading = models.FloatField()
+    reading_date_time = models.DateTimeField(blank=False, null=False)
+    register_reading = models.FloatField(blank=False, null=False)
     reset_date_time = models.DateTimeField(blank=True, null=True)
     md_reset_count = models.IntegerField(blank=True, null=True)
     reading_flag = models.CharField(max_length=SHORT_CHAR, blank=True, null=True)
-    reading_method = models.CharField(max_length=SHORT_CHAR)
+    reading_method = models.CharField(max_length=SHORT_CHAR, blank=False, null=False)
+    

@@ -22,6 +22,28 @@ class FlowRepository:
 
     def get_meters_for_mpan(self, mpan_core: str) -> List[Meter]:
         return list(Meter.objects.filter(mpan_core__mpan_core=mpan_core).select_related("mpan_core"))
+    
+    def get_readings(self, meter_id: str) -> List[Reading]:
+        return list(Reading.objects.filter(meter__meter_id=meter_id).select_related("meter"))
+
+    def get_reading(self, meter_id: str, meter_register_id: str, reading_date_time: str) -> Optional[Reading]:
+        return Reading.objects.filter(meter__meter_id=meter_id, meter_register_id=meter_register_id, reading_date_time=reading_date_time).select_related("meter").first()
+
+    def get_or_create_reading(self, meter_obj: Meter, meter_register_id: str, reading_date_time: str, register_reading: float,
+                              reset_date_time: Optional[str] = None, md_reset_count: Optional[int] = None,
+                              reading_flag: Optional[str] = None, reading_method: Optional[str] = None) -> Tuple[Reading, bool]:
+        return Reading.objects.get_or_create(
+            meter=meter_obj,
+            meter_register_id=meter_register_id,
+            reading_date_time=reading_date_time,
+            reading_method=reading_method,
+            register_reading=register_reading,
+            defaults={
+                "reset_date_time": reset_date_time,
+                "md_reset_count": md_reset_count,
+                "reading_flag": reading_flag,
+            }
+        )
 
     def add_processed_file(self, file_name: str) -> ProcessedFiles:
         return ProcessedFiles.objects.create(file_name=file_name, processed_at=timezone.now())
