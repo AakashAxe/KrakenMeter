@@ -15,6 +15,8 @@ Brainstormed how the database will look and support extendablility, did the same
     I have used services to perform the complex logic
     Repository class to handle reading and writing to Db
     Other Default classes to create api and models.
+- With the current implementation, there are no major trade-offs, other than you have a seperate app just for flow processing.
+- This approach follows the DRY principles by making the code reusable and neat. It doesnt break Single responsiblity principle, each method and class is doing their intended job and nothing additional.
 
 
 ## Time Limitations:
