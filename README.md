@@ -1,5 +1,5 @@
 # KrakenMeter
-
+Git Repo: https://github.com/AakashAxe/KrakenMeter
 ## My Appraoch:
 Before Developing I read the requirements and on a piece of paper designed the flow. 
 Brainstormed how the database will look and support extendablility, did the same for when designing what the code would look like.
