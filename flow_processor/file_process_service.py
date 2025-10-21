@@ -5,12 +5,19 @@ from datetime import datetime, timezone
 # TODO : Read each line check Enum
 
 def process_file(file_path: str):
+    if FlowRepository().get_processed_file(file_name=file_path) is not None:
+        print(f"File {file_path} has already been processed. Skipping.")
+        return
+            
     with open(file_path, 'r') as file:
         current_mpan_core_obj = None
         current_meter_obj = None
         for line in file:
             current_mpan_core_obj, current_meter_obj = read_line(line.strip(), current_mpan_core_obj, current_meter_obj)
-            print(current_mpan_core_obj, current_meter_obj)       
+            print(current_mpan_core_obj, current_meter_obj)    
+
+    #File processed add it to ProcessedFiles table
+    FlowRepository().add_processed_file(file_name=file_path)
 
 def read_line(line: str, current_mpan_core_obj: Optional[str], current_meter_obj: Optional[str]):
     data = line.split("|")

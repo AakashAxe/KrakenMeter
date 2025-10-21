@@ -1,5 +1,6 @@
 
 from .models import MPANCore, Meter, Reading, ProcessedFiles
+from django.utils import timezone
 
 
 class FlowRepository:
@@ -47,3 +48,6 @@ class FlowRepository:
 
     def add_processed_file(self, file_name: str) -> ProcessedFiles:
         return ProcessedFiles.objects.create(file_name=file_name, processed_at=timezone.now())
+
+    def get_processed_file(self, file_name: str) -> Optional[ProcessedFiles]:
+        return ProcessedFiles.objects.filter(file_name=file_name).first()
