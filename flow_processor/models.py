@@ -23,7 +23,7 @@ class MPANCore(models.Model):
     def __str__(self):
         return self.mpan_core
 
-class Meter(models.Model):
+class Meter(models.Model):                      # TODO : Composite Key=? 
     mpan_core = models.ForeignKey(MPANCore, on_delete=models.CASCADE, related_name='meters')
     meter_id = models.CharField(max_length=SHORT_CHAR, unique=True)
     meter_type = models.CharField(max_length=SHORT_CHAR)

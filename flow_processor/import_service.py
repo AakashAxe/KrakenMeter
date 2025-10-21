@@ -1,6 +1,6 @@
 import os
 import argparse
-from .file_process_service import read_line
+from .file_process_service import process_file
 
 
 # IMPORTING FILE AND READING
@@ -21,10 +21,8 @@ def read_file(file_path):
     if not os.path.exists(file_path) or not os.path.isfile(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
 
-    with open(file_path, 'r') as file:
-        
-        while line := file.readline():
-            read_line(line)
+    process_file(file_path)
+    
 
 def read_files_from_directory(directory_path):
     """Reads all files from the specified directory and returns their contents."""

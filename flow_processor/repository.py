@@ -8,13 +8,14 @@ class FlowRepository:
     def get_mpan(self, mpan_core: str) -> Optional[MPANCore]:
         return MPANCore.objects.filter(mpan_core=mpan_core).first()
 
-    def create_mpan(self, mpan_core: str, bcs_validation_status: str) -> Tuple[MPANCore, bool]:
-        print("this")
-        return MPANCore.objects.get_or_create(mpan_core=mpan_core, defaults={"bcs_validation_status": bcs_validation_status})
-        
+    def get_or_create_mpan(self, mpan_core: str, bcs_validation_status: str) -> Tuple[MPANCore, bool]:
+        return MPANCore.objects.get_or_create(mpan_core=mpan_core, defaults={"bcs_validation_status": bcs_validation_status})     
 
     def get_meter(self, mpan_core: str, meter_id: str) -> Optional[Meter]:
         return Meter.objects.filter(mpan_core__mpan_core=mpan_core, meter_id=meter_id).select_related("mpan_core").first()
+
+    def get_meter_by_id(self, meter_id: str) -> Optional[Meter]:
+        return Meter.objects.filter(meter_id=meter_id).select_related("mpan_core").first()
 
     def get_or_create_meter(self, mpan_core_obj: MPANCore, meter_id: str, meter_type: Optional[str] = None) -> Tuple[Meter, bool]:
         return Meter.objects.get_or_create(mpan_core=mpan_core_obj, meter_id=meter_id, defaults={"meter_type": meter_type or ""})
