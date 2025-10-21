@@ -6,9 +6,8 @@ from datetime import datetime, timezone
 
 def process_file(file_path: str):
     if FlowRepository().get_processed_file(file_name=file_path) is not None:
-        print(f"File {file_path} has already been processed. Skipping.")
-        return
-            
+        return f"File {file_path} has already been processed. Skipping."
+
     with open(file_path, 'r') as file:
         current_mpan_core_obj = None
         current_meter_obj = None
@@ -18,6 +17,7 @@ def process_file(file_path: str):
 
     #File processed add it to ProcessedFiles table
     FlowRepository().add_processed_file(file_name=file_path)
+    return "File processed successfully."
 
 def read_line(line: str, current_mpan_core_obj: Optional[str], current_meter_obj: Optional[str]):
     data = line.split("|")

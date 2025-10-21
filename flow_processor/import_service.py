@@ -21,7 +21,7 @@ def read_file(file_path):
     if not os.path.exists(file_path) or not os.path.isfile(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
 
-    process_file(file_path)
+    return process_file(file_path)
     
 
 def read_files_from_directory(directory_path):
@@ -36,6 +36,7 @@ def read_files_from_directory(directory_path):
         if os.path.isfile(file_path):
             with open(file_path, 'r') as file:
                 file_contents[filename] = file.read()
+            process_file(file_path)
     return file_contents
 
     

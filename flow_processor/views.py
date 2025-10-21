@@ -11,14 +11,14 @@ def read(request, path: str):
     View to handle file import requests.
     """
 
-    path = "sample_data/DTC5259515123502080915D0010.uff"
+    #path = "sample_data/DTC5259515123502080915D0010.uff"
     checked_path = check_path(path)
     print(checked_path)
     if checked_path == "directory":
-        read_files_from_directory(path)
+        message = read_files_from_directory(path)
         return HttpResponse({"Success": "File Ingested"}, status=200)
     elif checked_path == "file":
-        read_file(path)
+        message =read_file(path)
         return HttpResponse({"Success": "File Ingested"}, status=200)
     else:
         return HttpResponse({"status": "Path not found"}, status=404)
