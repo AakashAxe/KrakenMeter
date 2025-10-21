@@ -17,7 +17,7 @@ def check_path(directory_path):
 
 def read_file(file_path):
     """Reads the content of a single file."""
-
+    print(file_path)
     if not os.path.exists(file_path) or not os.path.isfile(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
 

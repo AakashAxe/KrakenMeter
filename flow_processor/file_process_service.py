@@ -2,8 +2,6 @@ from .meter_reading_codes import MeterReadingsCodes as Codes
 from .repository import FlowRepository
 from datetime import datetime, timezone
 
-# TODO : Read each line check Enum
-
 def process_file(file_path: str):
     if FlowRepository().get_processed_file(file_name=file_path) is not None:
         return f"File {file_path} has already been processed. Skipping."
@@ -24,7 +22,6 @@ def read_line(line: str, current_mpan_core_obj: Optional[str], current_meter_obj
     code = data[0]
     if code == Codes.MPAN_CORE.value:
         # Process MPAN core line
-        #print(f"Processing MPAN Core Line: {line}")
         return process_mpan_core(data)
     elif code == Codes.METER_READING_TYPE.value:
         # Process meter reading line
@@ -57,6 +54,7 @@ def process_meter_reading(data: [str], current_mpan_core: Optional[str]):
     meter_id = data[1]
     print(f"Meter ID: {meter_id}")
     reading_type = data[2]
+    # Check if meter already exists
     if FlowRepository().get_meter_by_id(meter_id) is None:
         meter_obj, created =FlowRepository().get_or_create_meter(mpan_core_obj=current_mpan_core, meter_id=meter_id, meter_type=reading_type)
         return current_mpan_core, meter_obj
@@ -69,15 +67,13 @@ def process_register_reading(data: [str], current_meter_obj: Optional[str]):
         print("Error: No current Meter set for register reading.")
         return
     register_id = data[1]
-    reading_date_time = convert_to_datetime(data[2])#data[2] #convert_to_datetime(data[2])
+    reading_date_time = convert_to_datetime(data[2])
     register_reading = float(data[3])
     reset_date_time =  convert_to_datetime(data[4]) if data[4] else None 
     md_reset_count = int(data[5]) if data[5] else None
     reading_flag = data[6] if data[6] else None
     reading_method = data[7]
-    print(current_meter_obj)
-    print(f"Register ID: {register_id}, Reading DateTime: {reading_date_time}, Register Reading: {register_reading}, Reset DateTime: {reset_date_time}, MD Reset Count: {md_reset_count}, Reading Flag: {reading_flag}, Reading Method: {reading_method}")
-    # Here you would typically save the reading to the database
+    # Check if reading already exists
     if FlowRepository().get_reading(current_meter_obj, register_id, reading_date_time) is None:
         FlowRepository().get_or_create_reading(
             meter_obj=current_meter_obj,
